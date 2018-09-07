@@ -13,41 +13,41 @@ export class BookStore extends Component {
         this._updateFormData = this._updateFormData.bind(this);
     }
 
-    _renderswitch(step, callback) {
+    _renderSwitch(step, callback) {
         switch(step) {
-        case 1: return <booklist updateformdata={callback}/>;
-        case 2: return <shippingdetails updateformdata={callback} carttimeout = {this.state.carttimeout}/>;
-        case 3: return <deliverydetails updateformdata={callback}/>;
-        case 4: return <confirmation updateformdata={callback} data={this.state.formvalues}/>;
-        case 5: return <success data={this.state.formvalues}/>;
-        default: return <booklist updateformdata={callback}/>;
+        case 1: return <BookList updateFormData={callback}/>;
+        case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout = {this.state.cartTimeout}/>;
+        case 3: return <DeliveryDetails updateFormData={callback}/>;
+        case 4: return <Confirmation updateFormData={callback} data={this.state.formValues}/>;
+        case 5: return <Success data={this.state.formValues}/>;
+        default: return <BookList updateFormData={callback}/>;
         }
     }
 
     /**
      * @param
-     *   formdata:  子组件传回来的数据
+     *   formData:  子组件传回来的数据
      * @param
-     *   formvalues:  父组件存储子组件的数据
+     *   formValues:  父组件存储子组件的数据
      */
-    _updateformdata(formdata) {
-        let formvalues = object.assign({}, formdata, this.state.formvalues);
-        let nextstep = this.state.currentstep + 1;
-        this.setstate({formvalues: formvalues, currentstep: nextstep}, () =>
+    _updateFormData(formData) {
+        let formValues = Object.assign({}, formData, this.state.formValues);
+        let nextStep = this.state.currentStep + 1;
+        this.setState({formValues: formValues, currentStep: nextStep}, () =>
                       console.log("file:form.js,\
-                               function: bookstore._updateformdata,\
+                               function: BookStore._updateFormData,\
                                    line:34",this.state));
     }
 
     render() {
         return(<div>
-               {this._renderswitch(this.state.currentstep, this._updateformdata)}
+               {this._renderSwitch(this.state.currentStep, this._updateFormData)}
                </div>
               );
     }
 }
 
-export class booklist extends component {
+export class BookList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,204 +56,202 @@ export class booklist extends component {
                 {id:2, name: 'monk who sold his ferrari', author: 'robin sharma' },
                 {id:3, name: 'wings of fire', author: 'a.p.j. abdul kalam' }
             ],
-            selectedbooks:[],
+            selectedBooks:[],
             error: false,
         };
     }
 
-    _renderbook(book) {
+    _renderBook(book) {
         return(
-                <div classname="checkbox" key={book.id}>
+                <div className="checkbox" key={book.id}>
                 <label>
                 <input type="checkbox"
                 value={book.name}
-                onchange={this.handleselectedbooks.bind(this)}/>
+                onChange={this.handleSelectedBooks.bind(this)}/>
                         {book.name}-{book.author}
                 </label>
             </div>
         );
     }
 
-    _rendererror() {
+    _renderError() {
         if (this.state.error) {
             return(
-                    <div classname="alert alert-danger">
+                    <div className="alert alert-danger">
                         {this.state.error}
                     </div>
             );
         }
     }
 
-    handleselectedbooks(event) {
-        let selectedbooks = this.state.selectedbooks;
-        let index = selectedbooks.indexof(event.target.value);
+    handleSelectedBooks(event) {
+        let selectedBooks = this.state.selectedBooks;
+        let index = selectedBooks.indexOf(event.target.value);
 
         if(event.target.checked) {
             if(-1 === index) {
-                selectedbooks.push(event.target.value);
+                selectedBooks.push(event.target.value);
             }
         }
         else {
-            selectedbooks.splice(index, 1);
+            selectedBooks.splice(index, 1);
         }
 
-        this.setstate({selectedbooks: selectedbooks}, () =>
+        this.setState({selectedBooks: selectedBooks}, () =>
                       console.log("file:form.js,\
-                               function: booklist.handleselectedbooks,\
+                               function: BookList.handleSelectedBooks,\
                                    line:96", this.state));
     }
 
-    handlesubmit(event) {
-        event.preventdefault();
-        if (0 === this.state.selectedbooks.length) {
-            this.setstate({error: "please choose at lease one book to continue!"});
+    handleSubmit(event) {
+        event.preventDefault();
+        if (0 === this.state.selectedBooks.length) {
+            this.setState({error: "please choose at lease one book to continue!"});
         }
         else {
-            this.setstate({error: false});
-            this.props.updateformdata({"selectedbooks": this.state.selectedbooks});
+            this.setState({error: false});
+            this.props.updateFormData({"selectedBooks": this.state.selectedBooks});
         }
     }
 
     render() {
-        let errormessage = this._rendererror();
+        let errorMessage = this._renderError();
         return(<div>
                    <h3>
                        choose fromwide variety of books available in our store.
                    </h3>
-                   {errormessage}
-                   <form onsubmit={this.handlesubmit.bind(this)}>
+                   {errorMessage}
+                   <form onSubmit={this.handleSubmit.bind(this)}>
                        {
                            this.state.books.map((book) => {
-                               return(this._renderbook(book));
+                               return(this._renderBook(book));
                            })
                        }
-                       <input type="submit" classname="btn btn-success"/>
+                       <input type="submit" className="btn btn-Success"/>
                    </form>
                 </div>
         );
     }
 }
 
-export class shippingdetails1 extends component {
+export class ShippingDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-                      fullname:        "",
-                      contactnumber:   "",
-                      shippingaddress: "",
+                      fullName:        "",
+                      contactNumber:   "",
+                      shippingAddress: "",
                       error:           false};
     }
 
-    componentdidmount() {
-       this.setstate({carttimeout: this.props.carttimeout});
+    Componentdidmount() {
+       this.setState({cartTimeout: this.props.cartTimeout});
     }
 
-    _rendererror() {
+    _renderError() {
         if (this.state.error) {
-            return(<div classname="alert alert-danger">
+            return(<div className="alert alert-danger">
                        {this.state.error}
                    </div> );
         }
     }
 
-    _validateinput() {
-        if (this.state.fullname === "") {
-            this.setstate({error: "please enter full name"});
+    _validateInput() {
+        if (this.state.fullName === "") {
+            this.setState({error: "please enter full name"});
         }
-        else if (this.state.contactnumber === "") {
-            this.setstate({error: "please enter contact number"});
+        else if (this.state.contactNumber === "") {
+            this.setState({error: "please enter contact number"});
         }
-        else if (this.state.shippingaddress === "") {
-            this.setstate({error: "please enter shipping address"});
+        else if (this.state.shippingAddress === "") {
+            this.setState({error: "please enter shipping address"});
         }
         else {
-            this.setstate({error: false});
+            this.setState({error: false});
             return true;
         }
     }
 
-    handlesubmit(event) {
-        event.preventdefault();
-        let formdata = {
-            fullname:        this.state.fullname,
-            contactnumber:   this.state.contactnumber,
-            shippingaddress: this.state.shippingaddress
+    handleSubmit(event) {
+        event.preventDefault();
+        let formData = {
+            fullName:        this.state.fullName,
+            contactNumber:   this.state.contactNumber,
+            shippingAddress: this.state.shippingAddress
         }
 
-        if (this._validateinput()) {
-            this.props.updateformdata(formdata);
+        if (this._validateInput()) {
+            this.props.updateFormData(formData);
         }
     }
 
-    handlechange(event, attribute) {
-        let newstate = this.state;
-        newstate[attribute] = event.target.value;
-        this.setstate(newstate, () => console.log("file:form.js,\
-                                         function: shippingdetails.handlechange,\
+    handleChange(event, attribute) {
+        let newState = this.state;
+        newState[attribute] = event.target.value;
+        this.setState(newState, () => console.log("file:form.js,\
+                                         function: ShippingDetails.handleChange,\
                                              line:208", this.state));
     }
 
     render() {
-        var errormessage = this._rendererror();
-        var minutes = math.floor(this.state.carttimeout / 60);
-        var seconds = this.state.carttimeout - minutes * 60;
+        var errorMessage = this._renderError();
+        var minutes = Math.floor(this.state.cartTimeout / 60);
+        var seconds = this.state.cartTimeout - minutes * 60;
         console.log(this.intervals);
         return(
             <div>
                 <h1>
                     enter your shipping information.
                 </h1>
-                {errormessage}
+                {errorMessage}
                 <div style={{width: 200, margin: "auto"}}>
-                    <form onsubmit={this.handlesubmit.bind(this)}>
-                        <div classname="form-group">
+                    <form onSubmit={this.handleSubmit.bind(this)}>
+                        <div className="form-group">
                             <input
-                                classname    ="form-control"
+                                className    ="form-control"
                                 type        ="text"
                                 placeholder ="full name"
-                                value       ={this.state.fullname}
-                                onchange    ={(event) => this.handlechange(event, "fullname")}
+                                value       ={this.state.fullName}
+                                onChange    ={(event) => this.handleChange(event, "fullName")}
                             />
                         </div>
-                        <div classname="form-group">
+                        <div className="form-group">
                             <input
-                                classname   ="form-control"
+                                className   ="form-control"
                                 type        ="text"
                                 placeholder ="contact number"
-                                value       ={this.state.contactnumber}
-                                onchange    ={(event) => this.handlechange(event, 'contactnumber')}
+                                value       ={this.state.contactNumber}
+                                onChange    ={(event) => this.handleChange(event, 'contactNumber')}
                             />
                         </div>
-                        <div classname="form-group">
+                        <div className="form-group">
                             <input
-                                classname   ="form-control"
+                                className   ="form-control"
                                 type        ="text"
                                 placeholder ="shipping address"
-                                value       ={this.state.shippingaddress}
-                                onchange    ={(event) => this.handlechange(event, 'shippingaddress')}
+                                value       ={this.state.shippingAddress}
+                                onChange    ={(event) => this.handleChange(event, 'shippingAddress')}
                             />
                         </div>
-                        <div classname="form-group">
+                        <div className="form-group">
                             <button
                                 type      ="submit"
                                 ref       ="submit"
-                                classname ="btn btn-success">
+                                className ="btn btn-Success">
                                 submit
                             </button>
                         </div>
                     </form>
                 </div>
-                <div classname="well">
-                    <span classname="glyphicon glyphicon-time" aria- hidden="true">
+                <div className="well">
+                    <span className="glyphicon glyphicon-time" aria- hidden="true">
                     </span>you have {minutes} minutes, {seconds} seconds, before confirming order.
                 </div>
             </div> );
     }
 }
 
-let shippingdetails = compose(carttimeoutenhance, intervalenhance)(shippingdetails1);
-
-    class deliverydetails extends component {
+class DeliveryDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -261,15 +259,15 @@ let shippingdetails = compose(carttimeoutenhance, intervalenhance)(shippingdetai
         };
     }
 
-    handlechange(event) {
-        this.setstate({delivery: event.target.value}, () => console.log("file:form.js,\
-                                                               function: deliverydetails.handlechange,\
+    handleChange(event) {
+        this.setState({delivery: event.target.value}, () => console.log("file:form.js,\
+                                                               function: DeliveryDetails.handleChange,\
                                                                    line:249", this.state));
     }
 
-    handlesubmit(event) {
-        event.preventdefault();
-        this.props.updateformdata(this.state);
+    handleSubmit(event) {
+        event.preventDefault();
+        this.props.updateFormData(this.state);
     }
 
     render () {
@@ -279,26 +277,26 @@ let shippingdetails = compose(carttimeoutenhance, intervalenhance)(shippingdetai
                         choose your delivery options here.
                     </h1>
                     <div style={{with:200}}>
-                        <form onsubmit={this.handlesubmit.bind(this)}>
-                            <div classname="radio">
+                        <form onSubmit={this.handleSubmit.bind(this)}>
+                            <div className="radio">
                                 <label>
                                     <input type = "radio"
                                           value = "primary"
                                         checked = {this.state.delivery ==="primary"}
-                                       onchange = {this.handlechange.bind(this)}/>
+                                       onChange = {this.handleChange.bind(this)}/>
                                     delivery in 1-2 days
                                 </label>
                             </div>
-                            <div classname="radio">
+                            <div className="radio">
                                 <label>
                                     <input type = "radio"
                                           value = "normal"
                                         checked = {this.state.delivery==="normal"}
-                                       onchange = {this.handlechange.bind(this)}/>
+                                       onChange = {this.handleChange.bind(this)}/>
                                     delivery in 3-4 days
                                 </label>
                             </div>
-                            <button classname="btn btn-success">submit</button>
+                            <button className="btn btn-Success">submit</button>
                         </form>
                     </div>
                 </div>
@@ -306,14 +304,14 @@ let shippingdetails = compose(carttimeoutenhance, intervalenhance)(shippingdetai
     }
 }
 
-class confirmation extends component {
+class Confirmation extends Component {
     constructor(props) {
         super(props);
     }
 
-    handlesubmit(event) {
-        event.preventdefault();
-        this.props.updateformdata(this.props.data);
+    handleSubmit(event) {
+        event.preventDefault();
+        this.props.updateFormData(this.props.data);
     }
 
     render() {
@@ -322,24 +320,24 @@ class confirmation extends component {
                     <h1>
                         are you sure to submit these datas?
                     </h1>
-                    <form onsubmit={this.handlesubmit.bind(this)}>
+                    <form onSubmit={this.handleSubmit.bind(this)}>
                         <div>
-                            <strong>full name</strong> : { this.props.data.fullname }
+                            <strong>full name</strong> : { this.props.data.fullName }
                         </div>
                         <br/>
                         <div>
-                            <strong>contact number</strong> : { this.props.data.contactnumber }
+                            <strong>contact number</strong> : { this.props.data.contactNumber }
                         </div>
                         <br/>
                         <div>
-                            <strong>shipping address</strong> : { this.props.data.shippingaddress }
+                            <strong>shipping address</strong> : { this.props.data.shippingAddress }
                         </div>
                         <br/>
                         <div>
-                            <strong>selected books</strong> : { this.props.data.selectedbooks.join(",")}
+                            <strong>selected books</strong> : { this.props.data.selectedBooks.join(",")}
                         </div>
                         <br/>
-                            <button classname="btn btn-success">
+                            <button className="btn btn-Success">
                                 place order
                             </button>
                     </form>
@@ -348,7 +346,7 @@ class confirmation extends component {
     }
 }
 
-class success extends component {
+class Success extends Component {
     constructor(props) {
         super(props);
     }
@@ -362,14 +360,15 @@ class success extends component {
         return(
             <div>
                 <h2>
-                    thank you for shopping whit us {this.props.data.fullname}.
+                    thank you for shopping whit us {this.props.data.fullName}.
                 </h2>
                 <h4>
-                    you will soon get {this.props.data.selectedbooks.join(",")} at {this.props.data.shippingaddress} in approximately {numberofdays} days.
+                    you will soon get {this.props.data.selectedBooks.join(",")} at {this.props.data.shippingAddress} in approximately {numberofdays} days.
                 </h4>
             </div>
         )
     }
 }
 
-export default bookstore;
+let ShippingDetailsEnhance = compose(CartTimeoutEnhance, IntervalEnhance)(ShippingDetails);
+export default BookStore;
