@@ -1,0 +1,13 @@
+#container{
+  text-align: center;
+}
+
+.recentChangesTable{
+    background-color: FloralWhite;
+    font-size: 19px;
+    margin: 0px auto
+}
+
+.tableHeadings{
+    background-color: aliceblue !important;
+}
