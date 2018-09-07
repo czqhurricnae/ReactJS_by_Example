@@ -15,9 +15,9 @@ export class BookStore extends Component {
 
     _renderSwitch(step, callback) {
         switch(step) {
-        case 1: return <BookList updateFormData={callback}/>;
-        case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout = {this.state.cartTimeout}/>;
-        case 3: return <DeliveryDetails updateFormData={callback}/>;
+            case 1: return <BookList updateFormData={callback} cartTimeout={this.state.cartTimeout}/>;
+        case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout}/>;
+            case 3: return <DeliveryDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout}/>;
         case 4: return <Confirmation updateFormData={callback} data={this.state.formValues}/>;
         case 5: return <Success data={this.state.formValues}/>;
         default: return <BookList updateFormData={callback}/>;
@@ -30,10 +30,11 @@ export class BookStore extends Component {
      * @param
      *   formValues:  父组件存储子组件的数据
      */
-    _updateFormData(formData) {
+    _updateFormData(returnData) {
+        const {cartTimeout, ...formData} = returnData;
         let formValues = Object.assign({}, formData, this.state.formValues);
         let nextStep = this.state.currentStep + 1;
-        this.setState({formValues: formValues, currentStep: nextStep}, () =>
+        this.setState({formValues: formValues, currentStep: nextStep, cartTimeout: cartTimeout}, () =>
                       console.log("file:form.js,\
                                function: BookStore._updateFormData,\
                                    line:34",this.state));
@@ -110,7 +111,7 @@ export class BookList extends Component {
         }
         else {
             this.setState({error: false});
-            this.props.updateFormData({"selectedBooks": this.state.selectedBooks});
+            this.props.updateFormData({selectedBooks: this.state.selectedBooks, cartTimeout: this.props.cartTimeout});
         }
     }
 
@@ -170,14 +171,15 @@ export class ShippingDetails extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        let formData = {
+        let returnData = {
             fullName:        this.state.fullName,
             contactNumber:   this.state.contactNumber,
-            shippingAddress: this.state.shippingAddress
+            shippingAddress: this.state.shippingAddress,
+            cartTimeout:     this.props.cartTimeout,
         }
 
         if (this._validateInput()) {
-            this.props.updateFormData(formData);
+            this.props.updateFormData(returnData);
         }
     }
 
@@ -267,35 +269,41 @@ class DeliveryDetails extends Component {
     }
 
     render () {
+        var minutes = Math.floor(this.props.cartTimeout / 60);
+        var seconds = this.props.cartTimeout - minutes * 60;
         return(
-                <div>
-                    <h1>
-                        choose your delivery options here.
-                    </h1>
-                    <div style={{with:200}}>
-                        <form onSubmit={this.handleSubmit.bind(this)}>
-                            <div className="radio">
-                                <label>
-                                    <input type = "radio"
-                                          value = "primary"
-                                        checked = {this.state.delivery ==="primary"}
+            <div>
+                <h1>
+                    choose your delivery options here.
+                </h1>
+                <div style={{with:200}}>
+                    <form onSubmit={this.handleSubmit.bind(this)}>
+                        <div className="radio">
+                            <label>
+                                <input type = "radio"
+                                       value = "primary"
+                                       checked = {this.state.delivery ==="primary"}
                                        onChange = {this.handleChange.bind(this)}/>
-                                    delivery in 1-2 days
-                                </label>
-                            </div>
-                            <div className="radio">
-                                <label>
-                                    <input type = "radio"
-                                          value = "normal"
-                                        checked = {this.state.delivery==="normal"}
+                                delivery in 1-2 days
+                            </label>
+                        </div>
+                        <div className="radio">
+                            <label>
+                                <input type = "radio"
+                                       value = "normal"
+                                       checked = {this.state.delivery==="normal"}
                                        onChange = {this.handleChange.bind(this)}/>
-                                    delivery in 3-4 days
-                                </label>
-                            </div>
-                            <button className="btn btn-Success">submit</button>
-                        </form>
-                    </div>
+                                delivery in 3-4 days
+                            </label>
+                        </div>
+                        <button className="btn btn-Success">submit</button>
+                    </form>
                 </div>
+                <div className="well">
+                    <span className="glyphicon glyphicon-time" aria-hidden="true">
+                    </span>you have {minutes} minutes, {seconds} seconds, before confirming order.
+                </div>
+            </div>
         );
     }
 }
@@ -368,4 +376,5 @@ class Success extends Component {
 
 /* let ShippingDetailsEnhance = compose(CartTimeoutEnhance, IntervalEnhance)(ShippingDetails); */
 let ShippingDetailsEnhance = IntervalEnhance(CartTimeoutEnhance(ShippingDetails));
+let DeliveryDetailsEnhance = IntervalEnhance(CartTimeoutEnhance(DeliveryDetails));
 export default BookStore;

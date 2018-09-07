@@ -9,8 +9,8 @@ export var IntervalEnhance = ComposeComponent => class extends Component{
     }
 
     componentWillMount() {
-        this.intervals = [];
         console.log('IntervalEnhance.componentWillMount');
+        this.intervals = [];
     }
 
     componentDidMount() {
@@ -63,8 +63,8 @@ export var CartTimeoutEnhance = ComposeComponent => class extends Component {
     }
 
     componentDidMount() {
-        this.props.inject(this.decrementCartTimer.bind(this), 1000);
         console.log('CartTimeoutEnhance.componentDidMount');
+        this.props.inject(this.decrementCartTimer.bind(this), 1000);
     }
 
     componentWillReceiveProps(nextProps) {
