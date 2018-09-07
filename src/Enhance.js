@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 
 export var IntervalEnhance = ComposeComponent => class extends Component{
     static displayName = "ComponentEnhanceWithIntervalHOC";
@@ -39,12 +39,14 @@ export var IntervalEnhance = ComposeComponent => class extends Component{
         this.intervals.map(clearInterval);
     }
 
-   inject(func, argument) {
-            this.intervals.push(setInterval(func, argument));
-        }
+    inject(func, argument) {
+        console.log("IntervalEnhance.inject");
+        this.intervals.push(setInterval(func, argument));
+    }
 
     render() {
-        return (<ComposeComponent {...this.props} {...this.state} inject={this.inject}/>);
+        console.log("IntervalEnhance.render");
+        return (<ComposeComponent inject={this.inject} {...this.props} {...this.state}/>);
     }
 }
 
@@ -61,7 +63,7 @@ export var CartTimeoutEnhance = ComposeComponent => class extends Component {
     }
 
     componentDidMount() {
-        this.props.inject(this.decrementCartTime, 1000);
+        this.props.inject(this.decrementCartTimer.bind(this), 1000);
         console.log('CartTimeoutEnhance.componentDidMount');
     }
 
@@ -96,7 +98,63 @@ export var CartTimeoutEnhance = ComposeComponent => class extends Component {
         }
     }
 
-   render() {
+    render() {
+        console.log("CartTimeoutEnhance.render");
         return (<ComposeComponent {...this.props} {...this.state}/>);
     }
 }
+
+/* export function IntervalEnhance(WrappedComponent) {
+ *     return class extends Component {
+ *         constructor(props) {
+ *             super(props);
+ *             this.inject = this.inject.bind(this);
+ *         }
+ *
+ *         componentWillMount() {
+ *             this.intervals = [];
+ *         }
+ *
+ *         componentWillUnMount() {
+ *             this.intervals.map(clearInterval);
+ *         }
+ *
+ *         inject(func, arg) {
+ *             this.intervals.push(setInterval(func, arg));
+ *         }
+ *
+ *         render() {
+ *             return <WrappedComponent inject={this.inject} {...this.props} {...this.state}/>;
+ *
+ *         }
+ *     }
+ * }
+ *
+ * export function CartTimeoutEnhance(WrappedComponent) {
+ *     return class extends Component {
+ *         constructor(props) {
+ *             super(props);
+ *             this.state = {cartTimeout: this.props.cartTimeout};
+ *         }
+ *
+ *         componentDidMount() {
+ *             this.props.inject(this.decrementCartTimer.bind(this), 1000);
+ *         }
+ *
+ *         decrementCartTimer() {
+ *             if (this.state.cartTimeout == 0) {
+ *                  this.props.alertCartTimeout();
+ *                  return;
+ *             }
+ *             else {
+ *                 this.setState({cartTimeout: this.state.cartTimeout - 1});
+ *                 console.log(this.state.cartTimeout);
+ *             }
+ *         }
+ *
+ *        render() {
+ *             return <WrappedComponent {...this.props} {...this.state}/>;
+ *         }
+ *
+ *     }
+ * } */

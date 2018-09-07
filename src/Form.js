@@ -144,10 +144,6 @@ export class ShippingDetails extends Component {
                       error:           false};
     }
 
-    Componentdidmount() {
-       this.setState({cartTimeout: this.props.cartTimeout});
-    }
-
     _renderError() {
         if (this.state.error) {
             return(<div className="alert alert-danger">
@@ -194,10 +190,10 @@ export class ShippingDetails extends Component {
     }
 
     render() {
+       console.log("ShippingDetails.render");
         var errorMessage = this._renderError();
-        var minutes = Math.floor(this.state.cartTimeout / 60);
-        var seconds = this.state.cartTimeout - minutes * 60;
-        console.log(this.intervals);
+        var minutes = Math.floor(this.props.cartTimeout / 60);
+        var seconds = this.props.cartTimeout - minutes * 60;
         return(
             <div>
                 <h1>
@@ -244,7 +240,7 @@ export class ShippingDetails extends Component {
                     </form>
                 </div>
                 <div className="well">
-                    <span className="glyphicon glyphicon-time" aria- hidden="true">
+                    <span className="glyphicon glyphicon-time" aria-hidden="true">
                     </span>you have {minutes} minutes, {seconds} seconds, before confirming order.
                 </div>
             </div> );
@@ -370,5 +366,6 @@ class Success extends Component {
     }
 }
 
-let ShippingDetailsEnhance = compose(CartTimeoutEnhance, IntervalEnhance)(ShippingDetails);
+/* let ShippingDetailsEnhance = compose(CartTimeoutEnhance, IntervalEnhance)(ShippingDetails); */
+let ShippingDetailsEnhance = IntervalEnhance(CartTimeoutEnhance(ShippingDetails));
 export default BookStore;
