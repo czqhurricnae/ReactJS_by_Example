@@ -1,4 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
+import AlertTimeoutModal from "./AlertTimeoutModal";
+
 
 export var IntervalEnhance = ComposeComponent => class extends Component{
     static displayName = "ComponentEnhanceWithIntervalHOC";
@@ -9,33 +11,33 @@ export var IntervalEnhance = ComposeComponent => class extends Component{
     }
 
     componentWillMount() {
-        console.log('IntervalEnhance.componentWillMount');
+        console.log("IntervalEnhance.componentWillMount");
         this.intervals = [];
     }
 
     componentDidMount() {
-        console.log('IntervalEnhance.componentDidMount');
+        console.log("IntervalEnhance.componentDidMount");
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('IntervalEnhance.componentWillReceiveProps');
+        console.log("IntervalEnhance.componentWillReceiveProps");
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log('IntervalEnhance.shouldComponentUpdate');
+        console.log("IntervalEnhance.shouldComponentUpdate");
         return true;
     }
 
     componentWillUpdate() {
-        console.log('IntervalEnhance.componentWillUpdate');
+        console.log("IntervalEnhance.componentWillUpdate");
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log('IntervalEnhance.componentDidUpdate')
+        console.log("IntervalEnhance.componentDidUpdate")
     }
 
     componentWillUnmount() {
-        console.log('IntervalEnhance.componentWillUnmount')
+        console.log("IntervalEnhance.componentWillUnmount")
         this.intervals.map(clearInterval);
     }
 
@@ -46,7 +48,7 @@ export var IntervalEnhance = ComposeComponent => class extends Component{
 
     render() {
         console.log("IntervalEnhance.render");
-        return (<ComposeComponent inject={this.inject} {...this.props} {...this.state}/>);
+        return (<ComposeComponent inject={this.inject} intervals={this.intervals} {...this.props} {...this.state}/>);
     }
 }
 
@@ -59,39 +61,40 @@ export var CartTimeoutEnhance = ComposeComponent => class extends Component {
     }
 
     componentWillMount() {
-        console.log('CartTimeoutEnhance.componentWillMount');
+        console.log("CartTimeoutEnhance.componentWillMount");
     }
 
     componentDidMount() {
-        console.log('CartTimeoutEnhance.componentDidMount');
+        console.log("CartTimeoutEnhance.componentDidMount");
         this.props.inject(this.decrementCartTimer.bind(this), 1000);
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('CartTimeoutEnhance.componentWillReceiveProps');
+        console.log("CartTimeoutEnhance.componentWillReceiveProps");
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log('CartTimeoutEnhance.shouldComponentUpdate');
+        console.log("CartTimeoutEnhance.shouldComponentUpdate");
         return true;
     }
 
     componentWillUpdate() {
-        console.log('CartTimeoutEnhance.componentWillUpdate');
+        console.log("CartTimeoutEnhance.componentWillUpdate");
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log('CartTimeoutEnhance.componentDidUpdate')
+        console.log("CartTimeoutEnhance.componentDidUpdate")
     }
 
     componentWillUnmount() {
-        console.log('CartTimeoutEnhance.componentWillUnmount')
+        console.log("CartTimeoutEnhance.componentWillUnmount")
     }
 
     decrementCartTimer() {
+        console.log("CartTimeoutEnhance.decrementCartTimer");
         if (this.state.cartTimeout == 0) {
             this.props.alertCartTimeout();
-            return;
+            this.props.intervals.map(clearInterval);
         }
         else {
             this.setState({cartTimeout: this.state.cartTimeout - 1});

@@ -1,26 +1,38 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import {IntervalEnhance, CartTimeoutEnhance} from './Enhance';
-import {compose} from 'redux';
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import {IntervalEnhance, CartTimeoutEnhance} from "./Enhance";
+import {compose} from "redux";
+import AlertTimeoutModal from "./AlertTimeoutModal";
+
 
 export class BookStore extends Component {
     constructor(props) {
         super(props);
         this.state = {currentStep: 1,
                       formValues: {},
-                      cartTimeout: 60*15,
+                      cartTimeout: 3,
                      };
         this._updateFormData = this._updateFormData.bind(this);
+        this._alertCartTimeout = this._alertCartTimeout.bind(this);
     }
 
     _renderSwitch(step, callback) {
         switch(step) {
-            case 1: return <BookList updateFormData={callback} cartTimeout={this.state.cartTimeout}/>;
-        case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout}/>;
-            case 3: return <DeliveryDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout}/>;
-        case 4: return <Confirmation updateFormData={callback} data={this.state.formValues}/>;
-        case 5: return <Success data={this.state.formValues}/>;
-        default: return <BookList updateFormData={callback}/>;
+            case 1: return <BookList updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
+            case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
+            case 3: return <DeliveryDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
+            case 4: return <ConfirmationEnhance updateFormData={callback} data={this.state.formValues} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
+            case 5: return <Success data={this.state.formValues}/>;
+            /* case 10: return <div><h2>Your cart timed out, Please try again.</h2></div> */
+            /* FIXME:
+             * Warning: Render methods should be a pure function of props and state;
+             * triggering nested component updates from render is not allowed.
+             * If necessary, trigger nested updates in componentDidUpdate.
+             * Check the render method of BookStore.
+             */
+
+            case 10: ReactDOM.render(<AlertTimeoutModal/>, document.getElementById("timeoutModal"));
+            default: return <BookList updateFormData={callback}/>;
         }
     }
 
@@ -40,6 +52,10 @@ export class BookStore extends Component {
                                    line:34",this.state));
     }
 
+    _alertCartTimeout() {
+        this.setState({currentStep: 10, formValues:{}, cartTimeout: 1});
+    }
+
     render() {
         return(<div>
                {this._renderSwitch(this.state.currentStep, this._updateFormData)}
@@ -53,9 +69,9 @@ export class BookList extends Component {
         super(props);
         this.state = {
             books: [
-                {id:1, name: 'zero to one', author: 'peter thiel' },
-                {id:2, name: 'monk who sold his ferrari', author: 'robin sharma' },
-                {id:3, name: 'wings of fire', author: 'a.p.j. abdul kalam' }
+                {id:1, name: "zero to one", author: "peter thiel" },
+                {id:2, name: "monk who sold his ferrari", author: "robin sharma" },
+                {id:3, name: "wings of fire", author: "a.p.j. abdul kalam" }
             ],
             selectedBooks:[],
             error: false,
@@ -98,10 +114,7 @@ export class BookList extends Component {
             selectedBooks.splice(index, 1);
         }
 
-        this.setState({selectedBooks: selectedBooks}, () =>
-                      console.log("file:form.js,\
-                               function: BookList.handleSelectedBooks,\
-                                   line:96", this.state));
+        this.setState({selectedBooks: selectedBooks});
     }
 
     handleSubmit(event) {
@@ -128,7 +141,7 @@ export class BookList extends Component {
                                return(this._renderBook(book));
                            })
                        }
-                       <input type="submit" className="btn btn-Success"/>
+                       <input type="submit" className="btn btn-success"/>
                    </form>
                 </div>
         );
@@ -186,9 +199,7 @@ export class ShippingDetails extends Component {
     handleChange(event, attribute) {
         let newState = this.state;
         newState[attribute] = event.target.value;
-        this.setState(newState, () => console.log("file:form.js,\
-                                         function: ShippingDetails.handleChange,\
-                                             line:208", this.state));
+        this.setState(newState);
     }
 
     render() {
@@ -219,7 +230,7 @@ export class ShippingDetails extends Component {
                                 type        ="text"
                                 placeholder ="contact number"
                                 value       ={this.state.contactNumber}
-                                onChange    ={(event) => this.handleChange(event, 'contactNumber')}
+                                onChange    ={(event) => this.handleChange(event, "contactNumber")}
                             />
                         </div>
                         <div className="form-group">
@@ -228,14 +239,14 @@ export class ShippingDetails extends Component {
                                 type        ="text"
                                 placeholder ="shipping address"
                                 value       ={this.state.shippingAddress}
-                                onChange    ={(event) => this.handleChange(event, 'shippingAddress')}
+                                onChange    ={(event) => this.handleChange(event, "shippingAddress")}
                             />
                         </div>
                         <div className="form-group">
                             <button
                                 type      ="submit"
                                 ref       ="submit"
-                                className ="btn btn-Success">
+                                className ="btn btn-success">
                                 submit
                             </button>
                         </div>
@@ -258,14 +269,13 @@ class DeliveryDetails extends Component {
     }
 
     handleChange(event) {
-        this.setState({delivery: event.target.value}, () => console.log("file:form.js,\
-                                                               function: DeliveryDetails.handleChange,\
-                                                                   line:249", this.state));
+        this.setState({delivery: event.target.value});
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        this.props.updateFormData(this.state);
+        const returnData = Object.assign({}, this.state, {cartTimeout: this.props.cartTimeout});
+        this.props.updateFormData(returnData);
     }
 
     render () {
@@ -296,7 +306,7 @@ class DeliveryDetails extends Component {
                                 delivery in 3-4 days
                             </label>
                         </div>
-                        <button className="btn btn-Success">submit</button>
+                        <button className="btn btn-success">submit</button>
                     </form>
                 </div>
                 <div className="well">
@@ -319,10 +329,13 @@ class Confirmation extends Component {
     }
 
     render() {
+        console.log(this.props.cartTimeout);
+        var minutes = Math.floor(this.props.cartTimeout / 60);
+        var seconds = this.props.cartTimeout - minutes * 60;
         return(
                 <div>
                     <h1>
-                        are you sure to submit these datas?
+                        Are you sure to submit these datas?
                     </h1>
                     <form onSubmit={this.handleSubmit.bind(this)}>
                         <div>
@@ -341,10 +354,15 @@ class Confirmation extends Component {
                             <strong>selected books</strong> : { this.props.data.selectedBooks.join(",")}
                         </div>
                         <br/>
-                            <button className="btn btn-Success">
-                                place order
-                            </button>
+                        <button className="btn btn-success">
+                            Place Order
+                        </button>
                     </form>
+                    <div className="well">
+                        <span className="glyphicon glyphicon-time" aria-hidden="true">
+                        </span>you have {minutes} minutes, {seconds} seconds, before confirming order.
+                    </div>
+
                 </div>
         );
     }
@@ -377,4 +395,6 @@ class Success extends Component {
 /* let ShippingDetailsEnhance = compose(CartTimeoutEnhance, IntervalEnhance)(ShippingDetails); */
 let ShippingDetailsEnhance = IntervalEnhance(CartTimeoutEnhance(ShippingDetails));
 let DeliveryDetailsEnhance = IntervalEnhance(CartTimeoutEnhance(DeliveryDetails));
+let ConfirmationEnhance = IntervalEnhance(CartTimeoutEnhance(Confirmation));
+
 export default BookStore;

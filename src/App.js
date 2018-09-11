@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import './App.css';
-import PropTypes from 'prop-types';
-import $ from 'jquery';
+import React, { Component } from "react";
+import "./App.css";
+import PropTypes from "prop-types";
+import $ from "jquery";
 
 // function Heading(props) {
 //         return (<th>{props.heading}</th>);
@@ -82,9 +82,9 @@ RecentChangesTable.Headings = class extends Component {
 
         return (
             <thead className="tableHeadings">
-            <tr>
-            {headings}
-            </tr>
+                <tr>
+                    {headings}
+                </tr>
             </thead>
         );
     }
@@ -104,8 +104,8 @@ RecentChangesTable.Rows = class extends Component {
 
         return (
                 <tbody>
-                {rows}
-            </tbody>
+                    {rows}
+                </tbody>
         );
     }
 };
