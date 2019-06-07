@@ -48,7 +48,7 @@ RecentChangesTable.Heading = class extends Component {
         super(props);
     }
 
-    render () {
+    render() {
         return (<th>{this.props.heading}</th>);
     }
 };
@@ -58,7 +58,7 @@ RecentChangesTable.Row = class extends Component {
         super(props);
     }
 
-    render () {
+    render() {
         return (
                 <tr>
                 <td>{this.props.changeSet.when}</td>
@@ -72,12 +72,13 @@ RecentChangesTable.Row = class extends Component {
 RecentChangesTable.Headings = class extends Component {
     constructor(props) {
         super(props);
-}
-    render () {
+    }
+
+    render() {
         let headings = this.props.headings.map((heading, index) =>
                            {return (<RecentChangesTable.Heading
                                     key={index}
-                                    heading={heading}/>);}
+                                    heading={heading} />);}
         );
 
         return (
@@ -93,26 +94,26 @@ RecentChangesTable.Headings = class extends Component {
 RecentChangesTable.Rows = class extends Component {
     constructor(props) {
         super(props);
-}
+    }
 
-    render () {
+    render() {
         let rows = this.props.rows.map((value, index) =>
                        {return (<RecentChangesTable.Row
                                 key={index}
-                                changeSet={value}/>);}
+                                changeSet={value} />);}
         );
 
         return (
-                <tbody>
-                    {rows}
-                </tbody>
+            <tbody>
+                {rows}
+            </tbody>
         );
     }
 };
 
 function RecentChangesTable(props) {
     return (<table className="recentChangesTable">{props.children}</table>);
-}
+};
 
 class App extends Component {
     constructor(props) {
@@ -123,7 +124,7 @@ class App extends Component {
 
     mapOpenLibraryDataToChangeSet(data) {
         return data.map(function(change, index) {
-            return({"when": change.timestamp,
+            return ({"when": change.timestamp,
                     "who": change.author.key,
                     "description": change.comment});
         });
@@ -136,8 +137,8 @@ class App extends Component {
                         {this.props.title}
                     </h1>
                     <RecentChangesTable>
-                        <RecentChangesTable.Headings/>
-                        <RecentChangesTable.Rows rows={this.state.changeSets}/>
+                        <RecentChangesTable.Headings />
+                        <RecentChangesTable.Rows rows={this.state.changeSets} />
                     </RecentChangesTable>
                 </div>
         );
@@ -154,7 +155,7 @@ class App extends Component {
             console.log(changeSets);
         });
     }
-}
+};
 
 RecentChangesTable.Headings.defaultProps = {
     headings: ["When happened", "Who did it", "What they change"]

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import {IntervalEnhance, CartTimeoutEnhance} from "./Enhance";
-import {compose} from "redux";
+import { IntervalEnhance, CartTimeoutEnhance } from "./Enhance";
+import { compose } from "redux";
 import AlertTimeoutModal from "./AlertTimeoutModal";
 
 
@@ -14,15 +14,17 @@ export class BookStore extends Component {
                      };
         this._updateFormData = this._updateFormData.bind(this);
         this._alertCartTimeout = this._alertCartTimeout.bind(this);
+        this._resetCartTimeout = this._resetCartTimeout.bind(this);
     }
 
     _renderSwitch(step, callback) {
         switch(step) {
-            case 1: return <BookList updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
-            case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
-            case 3: return <DeliveryDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
-            case 4: return <ConfirmationEnhance updateFormData={callback} data={this.state.formValues} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout}/>;
-            case 5: return <Success data={this.state.formValues}/>;
+            case 1: return <BookList updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout} />;
+            case 2: return <ShippingDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout} />;
+            case 3: return <DeliveryDetailsEnhance updateFormData={callback} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout} />;
+            case 4: return <ConfirmationEnhance updateFormData={callback} data={this.state.formValues} cartTimeout={this.state.cartTimeout} alertCartTimeout={this._alertCartTimeout} />;
+            case 5: return <Success data={this.state.formValues} />;
+
             /* case 10: return <div><h2>Your cart timed out, Please try again.</h2></div> */
             /* FIXME:
              * Warning: Render methods should be a pure function of props and state;
@@ -30,8 +32,7 @@ export class BookStore extends Component {
              * If necessary, trigger nested updates in componentDidUpdate.
              * Check the render method of BookStore.
              */
-
-            case 10: ReactDOM.render(<AlertTimeoutModal/>, document.getElementById("timeoutModal"));
+            case 10: return (<AlertTimeoutModal resetCartTimeout={this._resetCartTimeout} />)
             default: return <BookList updateFormData={callback}/>;
         }
     }
@@ -56,11 +57,16 @@ export class BookStore extends Component {
         this.setState({currentStep: 10, formValues:{}, cartTimeout: 1});
     }
 
+    _resetCartTimeout() {
+        this.setState({currentStep: 1, formValues:{}, cartTimeout: 3});
+    }
+
     render() {
-        return(<div>
-               {this._renderSwitch(this.state.currentStep, this._updateFormData)}
-               </div>
-              );
+        return (
+            <div>
+                {this._renderSwitch(this.state.currentStep, this._updateFormData)}
+            </div>
+        );
     }
 }
 
@@ -79,7 +85,7 @@ export class BookList extends Component {
     }
 
     _renderBook(book) {
-        return(
+        return (
                 <div className="checkbox" key={book.id}>
                 <label>
                 <input type="checkbox"
@@ -93,7 +99,7 @@ export class BookList extends Component {
 
     _renderError() {
         if (this.state.error) {
-            return(
+            return (
                     <div className="alert alert-danger">
                         {this.state.error}
                     </div>
@@ -130,7 +136,7 @@ export class BookList extends Component {
 
     render() {
         let errorMessage = this._renderError();
-        return(<div>
+        return (<div>
                    <h3>
                        choose fromwide variety of books available in our store.
                    </h3>
@@ -138,7 +144,7 @@ export class BookList extends Component {
                    <form onSubmit={this.handleSubmit.bind(this)}>
                        {
                            this.state.books.map((book) => {
-                               return(this._renderBook(book));
+                               return (this._renderBook(book));
                            })
                        }
                        <input type="submit" className="btn btn-success"/>
@@ -160,7 +166,7 @@ export class ShippingDetails extends Component {
 
     _renderError() {
         if (this.state.error) {
-            return(<div className="alert alert-danger">
+            return (<div className="alert alert-danger">
                        {this.state.error}
                    </div> );
         }
@@ -182,7 +188,7 @@ export class ShippingDetails extends Component {
         }
     }
 
-    handleSubmit(event) {
+    handleSubmit (event) {
         event.preventDefault();
         let returnData = {
             fullName:        this.state.fullName,
@@ -196,7 +202,7 @@ export class ShippingDetails extends Component {
         }
     }
 
-    handleChange(event, attribute) {
+    handleChange (event, attribute) {
         let newState = this.state;
         newState[attribute] = event.target.value;
         this.setState(newState);
@@ -207,7 +213,7 @@ export class ShippingDetails extends Component {
         var errorMessage = this._renderError();
         var minutes = Math.floor(this.props.cartTimeout / 60);
         var seconds = this.props.cartTimeout - minutes * 60;
-        return(
+        return (
             <div>
                 <h1>
                     enter your shipping information.
@@ -278,10 +284,10 @@ class DeliveryDetails extends Component {
         this.props.updateFormData(returnData);
     }
 
-    render () {
+    render() {
         var minutes = Math.floor(this.props.cartTimeout / 60);
         var seconds = this.props.cartTimeout - minutes * 60;
-        return(
+        return (
             <div>
                 <h1>
                     choose your delivery options here.
@@ -332,7 +338,7 @@ class Confirmation extends Component {
         console.log(this.props.cartTimeout);
         var minutes = Math.floor(this.props.cartTimeout / 60);
         var seconds = this.props.cartTimeout - minutes * 60;
-        return(
+        return (
                 <div>
                     <h1>
                         Are you sure to submit these datas?
@@ -379,7 +385,7 @@ class Success extends Component {
             numberofdays = "3 to 4";
         }
 
-        return(
+        return (
             <div>
                 <h2>
                     thank you for shopping whit us {this.props.data.fullName}.
